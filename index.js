@@ -90,15 +90,15 @@ app.post('/tickets', (req, res) => {
 app.put('/modificarTicket', (req, res) => {
     const repo = req.query.ticket; // ticket es solo una string
 
-    const { encabezado, descripcion, idf_tipo_ticket, idf_tipo_estado, repositorio, owner } = req.body;
+    const { encabezado, descripcion, idf_tipo_ticket, idf_tipo_estado, repositorio, owner, id_ticket } = req.body;
 
     const sql = `
         UPDATE TICKETS 
         SET encabezado = ?, descripcion = ?, idf_tipo_ticket = ?, idf_tipo_estado = ?, repositorio = ?, owner = ?
-        WHERE repositorio = ?
+        WHERE repositorio = ? and id_ticket = ?
     `;
 
-    db.query(sql, [encabezado, descripcion, idf_tipo_ticket, idf_tipo_estado, repositorio, owner, repo], (err, result) => {
+    db.query(sql, [encabezado, descripcion, idf_tipo_ticket, idf_tipo_estado, repositorio, owner, repo, id_ticket], (err, result) => {
         if (err) return res.status(500).send(err);
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Ticket no encontrado' });
@@ -107,6 +107,18 @@ app.put('/modificarTicket', (req, res) => {
     });
 });
 
+// Eliminar un ticket por id_ticket
+app.delete('/tickets/:id_ticket', (req, res) => {
+    const { id_ticket } = req.params;
+    const sql = 'DELETE FROM TICKETS WHERE id_ticket = ?';
+    db.query(sql, [id_ticket], (err, result) => {
+        if (err) return res.status(500).send(err);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Ticket no encontrado' });
+        }
+        res.json({ message: 'Ticket eliminado correctamente' });
+    });
+});
 
 // Puerto del servidor
 const PORT = 3000;
