@@ -120,6 +120,14 @@ app.delete('/tickets/:id_ticket', (req, res) => {
     });
 });
 
+app.get('/api/search', async (req, res) => {
+  const repo = req.query.q;
+  const response = await fetch(`https://api.github.com/search/repositories?q=${repo}`);
+  const data = await response.json();
+  res.json(data);
+});
+
+
 // Puerto del servidor
 const PORT = 3000;
 app.listen(PORT, () => {
